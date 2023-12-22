@@ -1,0 +1,57 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+
+@model Turk_Medya_Case.Models.Detail.DetailModel
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@Model.data.newsDetail.title</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        blockquote {
+            border-left: 5px solid #333;
+            margin: 0;
+            padding-left: 15px;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>@Model.data.newsDetail.title</h1>
+    @Html.Raw(@Model.data.newsDetail.bodyText)
+    <p><strong>Haber Tarihi:</strong> @Model.data.newsDetail.publishDate</p>
+    <img src="@Model.data.newsDetail.imageUrl" />
+    <button>
+        <a href="@Model.data.newsDetail.fullPath" class="btn btn-primary">Link</a>
+    </button>
+    
+
+
+    <h1>Related News</h1>
+    <h4>@Model.data.relatedNews.title</h4>
+    <p><strong>Haber Tarihi:</strong> @Model.data.relatedNews.publishDate</p>
+    <p>@Model.data.relatedNews.shortText</p>
+    
+</body>
+</html>

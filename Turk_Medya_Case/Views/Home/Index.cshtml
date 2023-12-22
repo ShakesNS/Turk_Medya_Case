@@ -1,0 +1,139 @@
+﻿@{
+	ViewData["Title"] = "Home Page";
+}
+
+@model List<Turk_Medya_Case.Models.MainPage.ItemList>
+
+
+
+<h2>News</h2>
+<form method="get">
+	<label for="categoryFilter">Category:</label>
+	<select id="categoryFilter" name="category" onchange="onSelectChange()">
+		<option value="All">All</option>
+		@foreach (var category in ViewBag.Categories)
+		{
+			<option value="@category">@category</option>
+		}
+
+	</select>
+</form>
+
+<label for="search">Search:</label>
+<input type="text" id="search" name="searchString" />
+<button type="submit" onclick="onSelectChange()">Search</button>
+<button>
+	<a href="@Url.Action("Index","Detail")" class="btn btn-info">News Detail</a>
+</button>
+<table class="table">
+	<thead>
+		<tr>
+			<th>Date</th>
+			<th>Title</th>
+			<th>Description</th>
+			<th>Source</th>
+		</tr>
+	</thead>
+	<tbody>
+		@for (int i = (ViewBag.CurrentPage - 1) * 5; i < ViewBag.CurrentPage * 5 && i < Model.Count; i++)
+		{
+			<tr>
+				<td>@Model[i].publishDate</td>
+				<td>@Model[i].title</td>
+				<td>@Model[i].shortText</td>
+				<td>
+					<a href="@Model[i].fullPath" class="btn btn-primary">Link</a>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+<div class="pagination">
+	@if (ViewBag.TotalPages > 1)
+	{
+		for (int i = 1; i <= ViewBag.TotalPages; i++)
+		{
+			<a href="@Url.Action("Index", new { page = i, category = ViewBag.CurrentCategory,search = ViewBag.CurrentSearch})" class="@(i == ViewBag.CurrentPage ? "active" : "number")">@i</a>
+			@if (i < ViewBag.TotalPages)
+			{
+				<span class="separator">|</span>
+			}
+		}
+	}
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+	function onSelectChange() {
+		var value = document.getElementById("categoryFilter").value;
+		var search = document.getElementById("search").value;
+		var selectedValue = "";
+		if (value === "All") {
+			selectedValue = "";
+		}
+		else {
+			selectedValue = value;
+		}
+
+
+		$.ajax({
+			type: "GET",
+			url: "@Url.Action("Index", "Home")",
+			data: { category: selectedValue, page: 1, searchString: search },
+			success: function (data) {
+				var baseUrl = "@Url.Action("Index")";
+				var newUrl = baseUrl + "?page=" + 1 + "&category=" + selectedValue + "&searchString=" +search;
+				window.location.href = newUrl;
+			},
+			error: function (error) {
+				console.log("AJAX isteği hatası", error);
+			}
+		});
+	}
+
+	$(document).ready(function () {
+		var selectedCategory = "@(ViewBag.CurrentCategory)";
+
+		
+		$("#categoryFilter option").each(function () {
+			if ($(this).val() === selectedCategory) {
+				$(this).prop("selected", true);
+			}
+		});
+
+		if (selectedCategory === "All") {
+			$("#categoryFilter").val("");
+		}
+	});
+
+
+</script>
+
+<style>
+	.pagination {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin-top: 20px;
+	}
+
+	.number {
+		padding: 5px 10px;
+		margin: 0 5px;
+		text-decoration: none;
+		border: 1px solid #ccc;
+		border-radius: 5px;
+		color: #333;
+	}
+
+		.number.active {
+			background-color: #007bff;
+			color: #fff;
+		}
+
+	.separator {
+		margin: 0 5px;
+	}
+</style>
+
